@@ -1,15 +1,32 @@
 "use client";
 import { UserDetailContext } from "@/context/userDetail";
 import Image from "next/image";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import EmptyWorkspace from "./EmptyWorkspace";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 function WorkSpaceBody() {
-
     const { userDetail } = useContext(UserDetailContext);
-    console.log(userDetail, "ddf")
+    const router = useRouter();
+    const [token, setToken] = useState('');
+    const GetGithubToken = async () => {
+        const result = await axios.get('/api/github/token');
+        console.log(result.data);
+        setToken(result.data.token);
+    }
+
+    useEffect(() => {
+        GetGithubToken();
+    }, []);
+
+    const OnAddRepo = async () => {
+        router.push('/api/github');
+    }
+
     return (
         <div className="">
             <div className="flex justify-between items-center">
@@ -24,11 +41,13 @@ function WorkSpaceBody() {
                     <h2>Connect Github & Add Repo</h2>
                 </div>
                 <div>
-                    <Button>
-                        Install
-                    </Button>
+                    {!token ? <Button onClick={OnAddRepo}>
+                        Setup
+                    </Button> : <Button>
+                        + Add Repo
+                    </Button>}
                 </div>
-            </Card>
+            </Card>``
             <Card className="mt-10">
                 <CardContent>
                     <EmptyWorkspace />
